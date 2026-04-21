@@ -1,0 +1,61 @@
+---
+description: Python testing practices and guidelines
+globs: tests/**/*.py
+alwaysApply: false
+---
+
+# Python testing practices and guidelines
+
+## Test structure
+
+- Organize tests to mirror source code structure.
+- Keep test files focused and well-organized.
+- Use clear, descriptive test names following the pattern: `test_[unit][scenario][expected]`.
+- Group related tests using pytest classes.
+- Use fixtures for common setup and teardown.
+- Separate unit tests from integration tests.
+- Use markers to categorize tests (`@pytest.mark`).
+
+## Test coverage
+
+- Write tests for all new functionality.
+- Include tests for:
+  - Happy path scenarios
+  - Edge cases and boundary conditions
+  - Error conditions and exception handling
+  - Input validation
+  - Complex business logic
+- Aim for comprehensive coverage (target > 80%).
+- Use coverage reports to identify gaps.
+- Test both sync and async code paths.
+
+## Test quality
+
+- Keep tests independent and isolated.
+- Use appropriate test fixtures for reusability.
+- Mock external dependencies consistently.
+- Use meaningful test data that reflects real scenarios.
+- Write deterministic tests (no random data unless controlled and seeded).
+- Follow Arrange–Act–Assert.
+- Use parametrized tests for multiple scenarios.
+- Keep tests simple and focused.
+- Avoid test interdependencies.
+
+## Test documentation
+
+- Document test purpose and expectations in docstrings.
+- Include examples of test data and expected outcomes.
+- Document any special setup requirements or prerequisites.
+- Explain complex test scenarios and edge cases.
+- Add comments for non-obvious test logic.
+- Document mock behavior and assumptions.
+
+## Test maintenance
+
+- Keep tests up to date with code changes.
+- Remove obsolete tests when code is removed.
+- Refactor tests when test code becomes complex.
+- Use shared test utilities for common operations.
+- Keep test code as clean as production code.
+- Update tests when fixing bugs.
+- Add regression tests for fixed issues.

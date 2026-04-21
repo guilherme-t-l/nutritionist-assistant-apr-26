@@ -1,0 +1,239 @@
+[
+  {
+    "label": "celiac-vegetarian",
+    "description": "No gluten, no meat — usually a hard combo to hit protein targets on.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": ["wheat", "gluten", "barley", "rye"],
+      "disliked_ingredients": [],
+      "calorie_target": 2000,
+      "protein_g_target": 100,
+      "carbs_g_target": 250,
+      "fat_g_target": 65,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "high-protein-vegan",
+    "description": "180g protein per day with no animal products — the agent should reach for tofu, tempeh, beans, seitan.",
+    "profile": {
+      "goal": "gain_muscle",
+      "allergies": ["meat", "chicken", "fish", "egg", "dairy", "milk", "cheese"],
+      "disliked_ingredients": [],
+      "calorie_target": 2800,
+      "protein_g_target": 180,
+      "carbs_g_target": 320,
+      "fat_g_target": 80,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["savory", "umami"],
+      "meals_per_day": 5
+    }
+  },
+  {
+    "label": "shellfish-allergy-bahian",
+    "description": "Bahian cuisine without shrimp/crab — forces the agent to substitute (e.g. fish moqueca, vatapá variants).",
+    "profile": {
+      "goal": "maintain",
+      "allergies": ["shrimp", "prawn", "crab", "lobster", "shellfish"],
+      "disliked_ingredients": [],
+      "calorie_target": 2200,
+      "protein_g_target": 130,
+      "carbs_g_target": 260,
+      "fat_g_target": 70,
+      "cuisine_preferences": ["Bahian"],
+      "flavor_profiles": ["spicy", "savory"],
+      "meals_per_day": 3
+    }
+  },
+  {
+    "label": "lactose-bahian-japanese",
+    "description": "Two cuisines, plus a real allergy — tests blending and substitution at once.",
+    "profile": {
+      "goal": "lose_weight",
+      "allergies": ["milk", "cheese", "yogurt", "lactose"],
+      "disliked_ingredients": ["cilantro"],
+      "calorie_target": 1700,
+      "protein_g_target": 120,
+      "carbs_g_target": 180,
+      "fat_g_target": 55,
+      "cuisine_preferences": ["Bahian", "Japanese"],
+      "flavor_profiles": ["umami", "savory"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "tight-cut-mineira",
+    "description": "Aggressive deficit (1500 kcal) with a high protein floor — the calorie-target metric will likely fail at baseline.",
+    "profile": {
+      "goal": "lose_weight",
+      "allergies": [],
+      "disliked_ingredients": [],
+      "calorie_target": 1500,
+      "protein_g_target": 130,
+      "carbs_g_target": 130,
+      "fat_g_target": 50,
+      "cuisine_preferences": ["Mineira"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 3
+    }
+  },
+  {
+    "label": "amazonian-six-meals",
+    "description": "Regional cuisine + 6 meals/day forces creativity in meal naming and avoids 'lunch big, dinner big' laziness.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": [],
+      "disliked_ingredients": ["okra"],
+      "calorie_target": 2400,
+      "protein_g_target": 140,
+      "carbs_g_target": 280,
+      "fat_g_target": 75,
+      "cuisine_preferences": ["Amazonian"],
+      "flavor_profiles": ["savory", "umami"],
+      "meals_per_day": 6
+    }
+  },
+  {
+    "label": "nut-and-soy-allergy",
+    "description": "Two common allergens that knock out a lot of go-to plant proteins.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": ["peanut", "almond", "cashew", "walnut", "soy", "tofu"],
+      "disliked_ingredients": [],
+      "calorie_target": 2100,
+      "protein_g_target": 120,
+      "carbs_g_target": 240,
+      "fat_g_target": 70,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "ovo-lacto-vegetarian-gaucha",
+    "description": "Gaúcha cuisine is famously meat-heavy — tests if the agent respects the vegetarian constraint while keeping the regional vibe (e.g. queijo coalho, polenta).",
+    "profile": {
+      "goal": "maintain",
+      "allergies": ["beef", "chicken", "pork", "fish", "shrimp"],
+      "disliked_ingredients": [],
+      "calorie_target": 2300,
+      "protein_g_target": 110,
+      "carbs_g_target": 280,
+      "fat_g_target": 80,
+      "cuisine_preferences": ["Gaucha"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "low-carb-nordestina",
+    "description": "Nordestina cuisine leans heavy on cassava/corn/rice — a low-carb target forces tradeoffs.",
+    "profile": {
+      "goal": "lose_weight",
+      "allergies": [],
+      "disliked_ingredients": [],
+      "calorie_target": 1800,
+      "protein_g_target": 140,
+      "carbs_g_target": 100,
+      "fat_g_target": 90,
+      "cuisine_preferences": ["Nordestina"],
+      "flavor_profiles": ["savory", "spicy"],
+      "meals_per_day": 3
+    }
+  },
+  {
+    "label": "italian-brazilian-couple",
+    "description": "Two wildly different cuisines, no allergies — tests that blending produces coherent days, not random switches per meal.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": [],
+      "disliked_ingredients": ["liver"],
+      "calorie_target": 2200,
+      "protein_g_target": 120,
+      "carbs_g_target": 260,
+      "fat_g_target": 75,
+      "cuisine_preferences": ["Brazilian", "Italian"],
+      "flavor_profiles": ["savory", "umami"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "sweet-tooth-recovery",
+    "description": "User likes sweet but is in a deficit — see if the plan budgets dessert sensibly or banishes it entirely.",
+    "profile": {
+      "goal": "lose_weight",
+      "allergies": [],
+      "disliked_ingredients": [],
+      "calorie_target": 1600,
+      "protein_g_target": 100,
+      "carbs_g_target": 180,
+      "fat_g_target": 50,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["sweet", "savory"],
+      "meals_per_day": 3
+    }
+  },
+  {
+    "label": "no-targets-just-vibes",
+    "description": "Calorie target only, no macros set — most lenient case. Should be the easiest win for target_accuracy.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": [],
+      "disliked_ingredients": [],
+      "calorie_target": 2000,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": [],
+      "meals_per_day": 3
+    }
+  },
+  {
+    "label": "athlete-cut-multi-allergy",
+    "description": "Real-world hard case: cutting weight, high protein, multiple allergies, regional preference.",
+    "profile": {
+      "goal": "lose_weight",
+      "allergies": ["egg", "dairy", "shellfish"],
+      "disliked_ingredients": ["broccoli"],
+      "calorie_target": 1900,
+      "protein_g_target": 160,
+      "carbs_g_target": 180,
+      "fat_g_target": 55,
+      "cuisine_preferences": ["Bahian", "Mineira"],
+      "flavor_profiles": ["savory", "spicy"],
+      "meals_per_day": 5
+    }
+  },
+  {
+    "label": "older-adult-soft-foods",
+    "description": "Disliked ingredients are texture-related, modest calorie target, simple cuisine.",
+    "profile": {
+      "goal": "maintain",
+      "allergies": [],
+      "disliked_ingredients": ["raw vegetables", "tough meat", "popcorn"],
+      "calorie_target": 1700,
+      "protein_g_target": 90,
+      "carbs_g_target": 200,
+      "fat_g_target": 55,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 4
+    }
+  },
+  {
+    "label": "office-worker-bulk",
+    "description": "Bulking, no allergies, generic Brazilian — the 'easy' baseline so we can see how big the gap is to the hard cases.",
+    "profile": {
+      "goal": "gain_muscle",
+      "allergies": [],
+      "disliked_ingredients": [],
+      "calorie_target": 3000,
+      "protein_g_target": 180,
+      "carbs_g_target": 360,
+      "fat_g_target": 90,
+      "cuisine_preferences": ["Brazilian"],
+      "flavor_profiles": ["savory"],
+      "meals_per_day": 5
+    }
+  }
+]

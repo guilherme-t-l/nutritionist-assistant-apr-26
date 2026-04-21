@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutri Assistant</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --card: #ffffff;
+      --ink: #222;
+      --muted: #666;
+      --accent: #2f855a;
+      --border: #e2e2e2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      font-family: -apple-system, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    h1 { margin-bottom: 0.25rem; }
+    .subtitle { color: var(--muted); margin-top: 0; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    label { display: block; margin-top: 1rem; font-weight: 600; }
+    .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.4rem 1rem;
+      margin-top: 0.4rem;
+    }
+    .checkbox-grid label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0;
+      font-weight: 400;
+    }
+    .checkbox-grid input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+    .macro-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .macro-row > div > label { margin-top: 0.5rem; font-size: 0.9rem; }
+    button {
+      margin-top: 1.25rem;
+      background: var(--accent);
+      color: white;
+      border: 0;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: wait; }
+    .meal { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem; }
+    .meal:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+    .meal h3 { margin: 0 0 0.25rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; }
+    .ingredients { font-size: 0.9rem; color: var(--muted); }
+    .chat-log { margin-bottom: 1rem; }
+    .chat-log .turn { padding: 0.5rem 0; border-bottom: 1px dashed var(--border); }
+    .chat-log .turn:last-child { border-bottom: 0; }
+    .chat-log .role { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
+    .hidden { display: none; }
+    .error { color: #b91c1c; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Nutri Assistant</h1>
+    <p class="subtitle">A Brazilian AI nutritionist. Tell it about you; it builds a day of meals.</p>
+
+    <section id="form-card" class="card">
+      <form id="profile-form">
+        <label for="goal">Goal</label>
+        <select id="goal" name="goal" required>
+          <option value="lose_weight">Lose weight</option>
+          <option value="maintain" selected>Maintain</option>
+          <option value="gain_muscle">Gain muscle</option>
+        </select>
+
+        <label for="calorie_target">Daily calorie target (kcal)</label>
+        <input id="calorie_target" name="calorie_target" type="number" min="800" max="5000" value="2000" required />
+
+        <label>Macro targets <span class="hint">(optional — leave blank if you only care about calories)</span></label>
+        <div class="macro-row">
+          <div>
+            <label for="protein_g_target">Protein (g)</label>
+            <input id="protein_g_target" type="number" min="0" placeholder="e.g. 150" />
+          </div>
+          <div>
+            <label for="carbs_g_target">Carbs (g)</label>
+            <input id="carbs_g_target" type="number" min="0" placeholder="e.g. 250" />
+          </div>
+          <div>
+            <label for="fat_g_target">Fat (g)</label>
+            <input id="fat_g_target" type="number" min="0" placeholder="e.g. 70" />
+          </div>
+        </div>
+
+        <label for="meals_per_day">Meals per day</label>
+        <input id="meals_per_day" type="number" min="1" max="8" value="3" required />
+
+        <label>Cuisine preferences <span class="hint">(tick any that apply)</span></label>
+        <div class="checkbox-grid" id="cuisines">
+          <label><input type="checkbox" value="Brazilian" checked /> Brazilian</label>
+          <label><input type="checkbox" value="Bahian" /> Bahian</label>
+          <label><input type="checkbox" value="Mineira" /> Mineira</label>
+          <label><input type="checkbox" value="Paulista" /> Paulista</label>
+          <label><input type="checkbox" value="Nordestina" /> Nordestina</label>
+          <label><input type="checkbox" value="Japanese" /> Japanese</label>
+          <label><input type="checkbox" value="Italian" /> Italian</label>
+          <label><input type="checkbox" value="Mediterranean" /> Mediterranean</label>
+        </div>
+
+        <label>Flavor profiles <span class="hint">(tick any that apply)</span></label>
+        <div class="checkbox-grid" id="flavors">
+          <label><input type="checkbox" value="savory" /> Savory</label>
+          <label><input type="checkbox" value="sweet" /> Sweet</label>
+          <label><input type="checkbox" value="spicy" /> Spicy</label>
+          <label><input type="checkbox" value="umami" /> Umami</label>
+          <label><input type="checkbox" value="sour" /> Sour</label>
+          <label><input type="checkbox" value="bitter" /> Bitter</label>
+        </div>
+
+        <label for="allergies">Allergies <span class="hint">(comma-separated — things you cannot safely eat)</span></label>
+        <input id="allergies" name="allergies" type="text" placeholder="peanuts, shellfish" />
+
+        <label for="disliked_ingredients">Dislikes <span class="hint">(comma-separated — you just don't enjoy them)</span></label>
+        <input id="disliked_ingredients" name="disliked_ingredients" type="text" placeholder="cilantro, liver" />
+
+        <button type="submit" id="submit-btn">Build my meal plan</button>
+        <p id="form-error" class="error hidden"></p>
+      </form>
+    </section>
+
+    <section id="plan-card" class="card hidden">
+      <h2>Your meal plan</h2>
+      <div id="plan-body"></div>
+      <p class="meta" id="plan-total"></p>
+      <p class="meta" id="plan-notes"></p>
+    </section>
+
+    <section id="chat-card" class="card hidden">
+      <h2>Refine it</h2>
+      <div class="chat-log" id="chat-log"></div>
+      <form id="chat-form">
+        <input id="chat-input" type="text" placeholder="e.g. make lunch lighter" required />
+        <button type="submit" id="chat-btn">Send</button>
+        <p id="chat-error" class="error hidden"></p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    let sessionId = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function checkedValues(containerId) {
+      // Collect the `value` of every ticked checkbox inside the container.
+      // `Array.from(...)` turns a NodeList into a real array so we can .map/.filter.
+      return Array.from(
+        document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)
+      ).map((el) => el.value);
+    }
+
+    function parseCommaList(text) {
+      return text.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
+    function optionalInt(id) {
+      // Blank macro fields -> send `null` (not 0) so Pydantic treats them as unset.
+      const raw = $(id).value.trim();
+      if (!raw) return null;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function renderPlan(plan) {
+      // MealPlan is now a single ordered `meals` list. We label each row
+      // with its index + the agent-provided `name`.
+      const body = $("plan-body");
+      body.innerHTML = "";
+      (plan.meals || []).forEach((meal, i) => {
+        const div = document.createElement("div");
+        div.className = "meal";
+        div.innerHTML = `
+          <h3>${i + 1}. ${escapeHtml(meal.name)}</h3>
+          <p>${escapeHtml(meal.description)}</p>
+          <p class="meta">${meal.calories} kcal · P ${meal.protein_g}g · C ${meal.carbs_g}g · F ${meal.fat_g}g</p>
+          <p class="ingredients">${meal.ingredients.map(food => escapeHtml(food.name)).join(", ")}</p>
+        `;
+        body.appendChild(div);
+      });
+      $("plan-total").textContent = `Total: ${plan.total_calories} kcal`;
+      $("plan-notes").textContent = plan.notes || "";
+    }
+
+    function appendChatTurn(role, text) {
+      const log = $("chat-log");
+      const div = document.createElement("div");
+      div.className = "turn";
+      div.innerHTML = `<div class="role">${role}</div><div>${escapeHtml(text)}</div>`;
+      log.appendChild(div);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    $("profile-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = $("submit-btn");
+      const err = $("form-error");
+      err.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "Thinking...";
+
+      const payload = {
+        goal: $("goal").value,
+        calorie_target: Number($("calorie_target").value),
+        protein_g_target: optionalInt("protein_g_target"),
+        carbs_g_target: optionalInt("carbs_g_target"),
+        fat_g_target: optionalInt("fat_g_target"),
+        meals_per_day: Number($("meals_per_day").value),
+        cuisine_preferences: checkedValues("cuisines"),
+        flavor_profiles: checkedValues("flavors"),
+        allergies: parseCommaList($("allergies").value),
+        disliked_ingredients: parseCommaList($("disliked_ingredients").value),
+      };
+
+      try {
+        const res = await fetch("/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
+        const data = await res.json();
+        sessionId = data.session_id;
+        renderPlan(data.plan);
+        $("form-card").classList.add("hidden");
+        $("plan-card").classList.remove("hidden");
+        $("chat-card").classList.remove("hidden");
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Build my meal plan";
+      }
+    });
+
+    $("chat-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = $("chat-btn");
+      const err = $("chat-error");
+      const input = $("chat-input");
+      err.classList.add("hidden");
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendChatTurn("you", message);
+      input.value = "";
+      btn.disabled = true;
+      btn.textContent = "...";
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId, message }),
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
+        const data = await res.json();
+        renderPlan(data.plan);
+        appendChatTurn("nutri", data.plan.notes || "(updated the plan — see above)");
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Send";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+description: Python style and conventions tuned for a PM learning to read code while building an AI agent.
+globs: */.py
+alwaysApply: true
+---
+
+# Python for a Learner Building an Agent
+
+Optimize for *readability by a learner*, not for cleverness. This project is a learning environment first, a working agent second.
+
+## Code style
+
+•⁠  ⁠*Use type hints everywhere* (⁠ def fetch(url: str) -> dict: ⁠). They double as documentation and link directly to Chapter 10 of the mini-book.
+•⁠  ⁠*Prefer explicit over clever.* A ⁠ for ⁠ loop the user can read beats a nested comprehension they have to decode.
+•⁠  ⁠*Name things like prose.* ⁠ get_user_by_id ⁠, not ⁠ gubi ⁠. ⁠ is_ready ⁠, not ⁠ rdy ⁠.
+•⁠  ⁠*Short functions.* If a function is longer than ~20 lines or does more than one thing, split it and say why.
+•⁠  ⁠*No unnecessary abstractions.* Don't introduce a class, decorator, or metaclass unless the user would genuinely benefit from learning it here.
+
+## Comments
+
+•⁠  ⁠Comments explain *intent and non-obvious trade-offs*, not what the code does.
+•⁠  ⁠When you DO want to teach a concept inline (e.g., what ⁠ async ⁠ means here), say so explicitly: ⁠ # Teaching note: this is async because... ⁠ — so the user knows it's pedagogy, not production style.
+•⁠  ⁠Never leave narration comments like ⁠ # increment the counter ⁠ in the final code.
+
+## Dependencies and structure
+
+•⁠  ⁠Pin versions in ⁠ requirements.txt ⁠ (or ⁠ pyproject.toml ⁠ if we adopt one). Say why each dependency is needed in a one-line comment next to it.
+•⁠  ⁠When adding a new import, briefly explain what the library does and why it beats writing it ourselves.
+•⁠  ⁠Follow the standard agent-project layout as it grows: ⁠ agent/ ⁠ for core logic, ⁠ tools/ ⁠ for tool definitions, ⁠ tests/ ⁠ for tests. Flag any deviation.
+
+## Idioms the user will meet often
+
+When you use one of these for the first time in the codebase, add a one-line teaching note:
+•⁠  ⁠⁠ async ⁠ / ⁠ await ⁠ (Chapter 9)
+•⁠  ⁠Decorators like ⁠ @dataclass ⁠, ⁠ @app.get(...) ⁠ (Chapter 5 / 11)
+•⁠  ⁠Pydantic ⁠ BaseModel ⁠ (Chapter 10)
+•⁠  ⁠Context managers (⁠ with ... as ... ⁠)
+•⁠  ⁠List/dict comprehensions
+
+After the first encounter, trust the user has seen it.

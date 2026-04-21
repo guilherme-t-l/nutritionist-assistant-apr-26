@@ -1,0 +1,30 @@
+# Secrets — never commit real API keys
+.env
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+non-relevant/.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments (uv creates .venv by default)
+.venv/
+venv/
+env/
+
+# uv lockfile is committed on purpose (reproducible installs),
+# but uv's build artefacts are not
+dist/
+build/
+*.egg-info/
+
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Phase 3 eval traces — local artefact, not source of truth
+traces.db
+

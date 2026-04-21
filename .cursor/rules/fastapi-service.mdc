@@ -1,0 +1,52 @@
+---
+description: FastAPI service-specific coding practices and architecture guidelines
+globs: src/**/*.py
+alwaysApply: false
+---
+
+# FastAPI service practices
+
+Scoped to Python under `src/`. Complements project-wide Python rules.
+
+## File structure
+
+- Export a top-level router; split sub-routes, utilities, and static content into focused modules.
+- Separate **models**, **services**, **controllers** (route modules), and **utilities** into distinct files.
+- Modular design, single responsibility; keep related code in feature modules.
+- Use a `types` (or equivalent) area for Pydantic schemas and shared data shapes.
+- **Business logic lives in services**; the HTTP layer only parses input, calls services, and maps responses.
+- Keep route handlers thin; delegate to service functions.
+
+## Components and validation
+
+- Prefer **plain functions** for business logic (not class-heavy patterns unless justified).
+- Use **Pydantic** for request/response schemas, validation, transformation, and typed settings/config.
+- Declare routes with clear **return type annotations**.
+- Use `def` for CPU-bound / synchronous work (e.g. pure transforms); use `async def` for I/O (DB, HTTP clients).
+- Validate inputs with Pydantic models; use **FastAPI dependencies** for shared resources (DB sessions, auth context, settings).
+
+## Application lifecycle
+
+- Avoid heavy use of `@app.on_event("startup")` / `"shutdown"`; prefer a **`lifespan` async context manager** on the app factory.
+- Use **middleware** for cross-cutting concerns: request/response logging, errors, perf hooks, auth, CORS, security headers.
+- Use **connection pooling** for databases and external clients; support **graceful shutdown** (drain in-flight work, close pools).
+
+## Dependency management
+
+- Use **uv** for installs and env isolation (virtual environments).
+- Define all dependencies in **`pyproject-dependencies.toml`** with version constraints; keep security patches current.
+- Use **dependency groups** for dev / test / prod; pin versions where stability matters.
+
+## Logging
+
+- Use **kebab-case keys** in `logging` `extra` dicts so structured logs stay consistent.
+
+```python
+# Good
+logger.info("user signed in", extra={"user-id": 123, "request-id": "abc"})
+
+# Avoid for extra keys
+logger.info("user signed in", extra={"user_id": 123})
+```
+
+Do not use snake_case for those `extra` keys; prefer `user-id`, `request-id`, etc.
