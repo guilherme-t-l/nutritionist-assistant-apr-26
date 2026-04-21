@@ -76,4 +76,4 @@ nutri-assistant/
     └── test_chat.py
 ```
 
-Later phases add `tools/`, `evals/`, and a React `frontend/`.
+Later phases add `tools/` and `evals/`.
