@@ -3,48 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nutri Assistant</title>
+  <title>NutriAgent</title>
   <style>
     :root {
       --bg: #f7f5f0;
-      --card: #ffffff;
-      --ink: #222;
-      --muted: #666;
+      --panel: #ffffff;
+      --panel-2: #fafaf7;
+      --ink: #1f2937;
+      --muted: #6b7280;
       --accent: #2f855a;
-      --border: #e2e2e2;
+      --accent-soft: #e8f3ec;
+      --accent-ink: #1f6a48;
+      --border: #e5e7eb;
+      --border-strong: #d1d5db;
+      --user-bubble: #2f855a;
+      --user-ink: #ffffff;
+      --assistant-bubble: #f1efea;
+      --assistant-ink: #1f2937;
+      --danger: #b91c1c;
+      --ok: #2f855a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
-      padding: 2rem 1rem;
-      font-family: -apple-system, system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: var(--bg);
       color: var(--ink);
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
-    main {
+    .hidden { display: none !important; }
+
+    /* ---------- Onboarding view (same form, slightly polished) ---------- */
+    .onboarding {
       max-width: 720px;
       margin: 0 auto;
+      padding: 2rem 1rem 3rem;
     }
-    h1 { margin-bottom: 0.25rem; }
-    .subtitle { color: var(--muted); margin-top: 0; }
+    .onboarding h1 { margin-bottom: 0.25rem; }
+    .onboarding .subtitle { color: var(--muted); margin-top: 0; }
     .card {
-      background: var(--card);
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 1.5rem;
       margin-bottom: 1rem;
+      box-shadow: var(--shadow);
     }
     label { display: block; margin-top: 1rem; font-weight: 600; }
     .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
     input[type="text"], input[type="number"], select, textarea {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.55rem 0.7rem;
       margin-top: 0.25rem;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
       font-size: 1rem;
       font-family: inherit;
+      background: var(--panel);
+      color: var(--ink);
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      border-color: var(--accent);
     }
     .checkbox-grid {
       display: grid;
@@ -59,46 +83,358 @@
       margin: 0;
       font-weight: 400;
     }
-    .checkbox-grid input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-    }
+    .checkbox-grid input[type="checkbox"] { width: auto; margin: 0; }
     .macro-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.5rem;
     }
     .macro-row > div > label { margin-top: 0.5rem; font-size: 0.9rem; }
-    button {
+    .btn-primary {
       margin-top: 1.25rem;
       background: var(--accent);
       color: white;
       border: 0;
-      padding: 0.6rem 1.2rem;
-      border-radius: 4px;
+      padding: 0.65rem 1.2rem;
+      border-radius: 6px;
       font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease;
     }
-    button:disabled { opacity: 0.5; cursor: wait; }
-    .meal { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem; }
-    .meal:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
-    .meal h3 { margin: 0 0 0.25rem; }
-    .meta { color: var(--muted); font-size: 0.9rem; }
-    .ingredients { font-size: 0.9rem; color: var(--muted); }
-    .chat-log { margin-bottom: 1rem; }
-    .chat-log .turn { padding: 0.5rem 0; border-bottom: 1px dashed var(--border); }
-    .chat-log .turn:last-child { border-bottom: 0; }
-    .chat-log .role { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
-    .hidden { display: none; }
-    .error { color: #b91c1c; margin-top: 0.5rem; }
+    .btn-primary:hover:not(:disabled) { background: #256b48; }
+    .btn-primary:active:not(:disabled) { transform: translateY(1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: wait; }
+    .error { color: var(--danger); margin-top: 0.5rem; }
+
+    /* ---------- Split-panel app layout ---------- */
+    .app {
+      display: grid;
+      grid-template-columns: 45% 55%;
+      height: 100vh;
+      width: 100%;
+      background: var(--bg);
+    }
+    .chat-panel {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      min-width: 0;
+      height: 100vh;
+    }
+    .plan-panel {
+      overflow-y: auto;
+      padding: 1.5rem;
+      min-width: 0;
+      height: 100vh;
+    }
+
+    /* Chat header */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .chat-header .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+    .chat-header .brand .dot {
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .btn-ghost:hover { color: var(--accent-ink); border-color: var(--accent); background: var(--accent-soft); }
+
+    /* Chat thread */
+    .chat-thread {
+      overflow-y: auto;
+      padding: 1.25rem 1.25rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      scroll-behavior: smooth;
+    }
+    .bubble {
+      max-width: 82%;
+      padding: 0.6rem 0.85rem;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.4;
+      animation: bubble-in 0.18s ease-out;
+    }
+    @keyframes bubble-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--user-bubble);
+      color: var(--user-ink);
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.assistant {
+      align-self: flex-start;
+      background: var(--assistant-bubble);
+      color: var(--assistant-ink);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Typing indicator */
+    .typing {
+      align-self: flex-start;
+      background: var(--assistant-bubble);
+      color: var(--muted);
+      padding: 0.6rem 0.85rem;
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+      display: inline-flex;
+      gap: 4px;
+    }
+    .typing span {
+      width: 6px; height: 6px; border-radius: 999px;
+      background: currentColor;
+      opacity: 0.5;
+      animation: blink 1.2s infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-2px); }
+    }
+
+    /* Chat input */
+    .chat-input-area {
+      border-top: 1px solid var(--border);
+      padding: 0.75rem 1rem 1rem;
+      background: var(--panel);
+    }
+    .chat-input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 0.45rem 0.5rem 0.45rem 0.75rem;
+      background: var(--panel);
+      transition: border-color 0.15s;
+    }
+    .chat-input-row:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .chat-input-row textarea {
+      flex: 1;
+      margin: 0;
+      border: 0;
+      padding: 0.3rem 0;
+      resize: none;
+      outline: none !important;
+      box-shadow: none !important;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      max-height: calc(1.4em * 4 + 0.6em);
+      overflow-y: auto;
+      background: transparent;
+    }
+    .chat-input-row textarea:focus { outline: none; border: 0; }
+    .send-btn {
+      background: var(--accent);
+      color: white;
+      border: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .send-btn:hover:not(:disabled) { background: #256b48; }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn svg { width: 16px; height: 16px; }
+    .chat-input-error { color: var(--danger); font-size: 0.85rem; margin: 0.4rem 0.25rem 0; }
+
+    /* ---------- Meal plan card ---------- */
+    .plan-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .plan-empty {
+      max-width: 760px;
+      margin: 3rem auto;
+      text-align: center;
+      color: var(--muted);
+    }
+    .day-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .day-tab {
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .day-tab.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .meal-block { padding: 0.75rem 0 1rem; }
+    .meal-block + .meal-block { border-top: 1px solid var(--border); }
+    .meal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .meal-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .meal-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 0.6rem;
+    }
+    .food-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .food-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      font-size: 0.93rem;
+      padding: 0.1rem 0;
+    }
+    .food-name { color: var(--ink); }
+    .food-qty {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .food-meta {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .meal-total {
+      margin-top: 0.75rem;
+      padding-top: 0.55rem;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .meal-total strong { color: var(--ink); font-weight: 600; }
+
+    .day-total {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .day-total .label { font-weight: 700; }
+    .day-total .macros { color: var(--muted); }
+    .target-row {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .delta.ok { color: var(--ok); font-weight: 600; }
+    .delta.off { color: var(--danger); font-weight: 600; }
+    .plan-notes {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-style: italic;
+    }
+
+    /* ---------- Mobile: stack plan on top, chat below ---------- */
+    @media (max-width: 768px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        min-height: 100vh;
+      }
+      .plan-panel {
+        order: 1;
+        height: auto;
+        max-height: 60vh;
+        border-bottom: 1px solid var(--border);
+      }
+      .chat-panel {
+        order: 2;
+        height: auto;
+        min-height: 50vh;
+        border-right: 0;
+      }
+      .chat-thread { max-height: 40vh; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Nutri Assistant</h1>
+  <!-- ONBOARDING VIEW -->
+  <main id="onboarding-view" class="onboarding hidden">
+    <h1>NutriAgent</h1>
     <p class="subtitle">A Brazilian AI nutritionist. Tell it about you; it builds a day of meals.</p>
 
-    <section id="form-card" class="card">
+    <section class="card">
       <form id="profile-form">
         <label for="goal">Goal</label>
         <select id="goal" name="goal" required>
@@ -157,81 +493,50 @@
         <label for="disliked_ingredients">Dislikes <span class="hint">(comma-separated — you just don't enjoy them)</span></label>
         <input id="disliked_ingredients" name="disliked_ingredients" type="text" placeholder="cilantro, liver" />
 
-        <button type="submit" id="submit-btn">Build my meal plan</button>
+        <button type="submit" id="submit-btn" class="btn-primary">Build my meal plan</button>
         <p id="form-error" class="error hidden"></p>
-      </form>
-    </section>
-
-    <section id="plan-card" class="card hidden">
-      <h2>Your meal plan</h2>
-      <div id="plan-body"></div>
-      <p class="meta" id="plan-total"></p>
-      <p class="meta" id="plan-notes"></p>
-    </section>
-
-    <section id="chat-card" class="card hidden">
-      <h2>Refine it</h2>
-      <div class="chat-log" id="chat-log"></div>
-      <form id="chat-form">
-        <input id="chat-input" type="text" placeholder="e.g. make lunch lighter" required />
-        <button type="submit" id="chat-btn">Send</button>
-        <p id="chat-error" class="error hidden"></p>
       </form>
     </section>
   </main>
 
+  <!-- SPLIT-PANEL VIEW -->
+  <div id="split-view" class="app hidden">
+    <aside class="chat-panel">
+      <header class="chat-header">
+        <div class="brand">
+          <span class="dot" aria-hidden="true"></span>
+          NutriAgent
+        </div>
+        <button id="new-plan-btn" class="btn-ghost" type="button">New plan</button>
+      </header>
+      <div id="chat-thread" class="chat-thread" aria-live="polite"></div>
+      <div class="chat-input-area">
+        <form id="chat-form">
+          <div class="chat-input-row">
+            <textarea id="chat-input" rows="1" placeholder="Ask me to adjust anything…"></textarea>
+            <button id="chat-send" type="submit" class="send-btn" aria-label="Send" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <p id="chat-error" class="chat-input-error hidden"></p>
+        </form>
+      </div>
+    </aside>
+    <main class="plan-panel">
+      <div id="plan-card" class="plan-card">
+        <div class="plan-empty">Your meal plan will appear here.</div>
+      </div>
+    </main>
+  </div>
+
   <script>
-    let sessionId = null;
-
+    // ---------- Tiny DOM + utility helpers ----------
     const $ = (id) => document.getElementById(id);
-
-    function checkedValues(containerId) {
-      // Collect the `value` of every ticked checkbox inside the container.
-      // `Array.from(...)` turns a NodeList into a real array so we can .map/.filter.
-      return Array.from(
-        document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)
-      ).map((el) => el.value);
-    }
-
-    function parseCommaList(text) {
-      return text.split(",").map((s) => s.trim()).filter(Boolean);
-    }
-
-    function optionalInt(id) {
-      // Blank macro fields -> send `null` (not 0) so Pydantic treats them as unset.
-      const raw = $(id).value.trim();
-      if (!raw) return null;
-      const n = Number(raw);
-      return Number.isFinite(n) ? n : null;
-    }
-
-    function renderPlan(plan) {
-      // MealPlan is now a single ordered `meals` list. We label each row
-      // with its index + the agent-provided `name`.
-      const body = $("plan-body");
-      body.innerHTML = "";
-      (plan.meals || []).forEach((meal, i) => {
-        const div = document.createElement("div");
-        div.className = "meal";
-        div.innerHTML = `
-          <h3>${i + 1}. ${escapeHtml(meal.name)}</h3>
-          <p>${escapeHtml(meal.description)}</p>
-          <p class="meta">${meal.calories} kcal · P ${meal.protein_g}g · C ${meal.carbs_g}g · F ${meal.fat_g}g</p>
-          <p class="ingredients">${meal.ingredients.map(food => escapeHtml(food.name)).join(", ")}</p>
-        `;
-        body.appendChild(div);
-      });
-      $("plan-total").textContent = `Total: ${plan.total_calories} kcal`;
-      $("plan-notes").textContent = plan.notes || "";
-    }
-
-    function appendChatTurn(role, text) {
-      const log = $("chat-log");
-      const div = document.createElement("div");
-      div.className = "turn";
-      div.innerHTML = `<div class="role">${role}</div><div>${escapeHtml(text)}</div>`;
-      log.appendChild(div);
-    }
+    const SS_KEYS = {
+      sessionId: "nutri.sessionId",
+      calorieTarget: "nutri.calorieTarget",
+      plan: "nutri.plan",
+    };
 
     function escapeHtml(str) {
       return String(str).replace(/[&<>"']/g, (c) => ({
@@ -239,17 +544,242 @@
       }[c]));
     }
 
+    function checkedValues(containerId) {
+      return Array.from(
+        document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)
+      ).map((el) => el.value);
+    }
+    function parseCommaList(text) {
+      return text.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+    function optionalInt(id) {
+      const raw = $(id).value.trim();
+      if (!raw) return null;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    // ---------- App state ----------
+    // Session state lives in sessionStorage so a page reload inside the same
+    // tab keeps the user in their conversation. "New plan" clears it.
+    let state = {
+      sessionId: sessionStorage.getItem(SS_KEYS.sessionId) || null,
+      calorieTarget: Number(sessionStorage.getItem(SS_KEYS.calorieTarget)) || null,
+      plan: safeParseJson(sessionStorage.getItem(SS_KEYS.plan)),
+      messages: [], // {role: "user"|"assistant", text: string}
+      waiting: false,
+      activeDayIndex: 0,
+    };
+
+    function safeParseJson(raw) {
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function persistSession(sessionId, calorieTarget) {
+      sessionStorage.setItem(SS_KEYS.sessionId, sessionId);
+      if (calorieTarget != null) {
+        sessionStorage.setItem(SS_KEYS.calorieTarget, String(calorieTarget));
+      }
+    }
+    function persistPlan(plan) {
+      sessionStorage.setItem(SS_KEYS.plan, JSON.stringify(plan));
+    }
+    function clearSession() {
+      sessionStorage.removeItem(SS_KEYS.sessionId);
+      sessionStorage.removeItem(SS_KEYS.calorieTarget);
+      sessionStorage.removeItem(SS_KEYS.plan);
+    }
+
+    // ---------- View switching ----------
+    function showOnboarding() {
+      $("onboarding-view").classList.remove("hidden");
+      $("split-view").classList.add("hidden");
+    }
+    function showSplitView() {
+      $("onboarding-view").classList.add("hidden");
+      $("split-view").classList.remove("hidden");
+      renderPlan(state.plan);
+      renderChat();
+      // Auto-grow textarea + focus
+      setTimeout(() => {
+        autosizeTextarea($("chat-input"));
+        $("chat-input").focus();
+      }, 0);
+    }
+
+    // ---------- Chat rendering ----------
+    function renderChat() {
+      const thread = $("chat-thread");
+      thread.innerHTML = "";
+      for (const m of state.messages) {
+        const div = document.createElement("div");
+        div.className = `bubble ${m.role}`;
+        div.textContent = m.text;
+        thread.appendChild(div);
+      }
+      if (state.waiting) {
+        const typing = document.createElement("div");
+        typing.className = "typing";
+        typing.id = "typing-indicator";
+        typing.innerHTML = "<span></span><span></span><span></span>";
+        thread.appendChild(typing);
+      }
+      scrollChatToBottom();
+    }
+
+    function pushMessage(role, text) {
+      state.messages.push({ role, text });
+      renderChat();
+    }
+
+    function scrollChatToBottom() {
+      const thread = $("chat-thread");
+      // requestAnimationFrame ensures layout is flushed before we scroll.
+      requestAnimationFrame(() => {
+        thread.scrollTop = thread.scrollHeight;
+      });
+    }
+
+    // ---------- Plan rendering ----------
+    // Our MealPlan schema is a single day (`meals: Meal[]`). The task spec
+    // mentions "Day X of Y" tabs if the plan ever had multiple days — we
+    // normalize to an array of days so the UI is ready for both shapes.
+    function normalizeToDays(plan) {
+      if (!plan) return [];
+      if (Array.isArray(plan.days) && plan.days.length > 0) return plan.days;
+      // Single-day plan: wrap in one pseudo-day.
+      return [{ meals: plan.meals || [], notes: plan.notes || "" }];
+    }
+
+    function renderPlan(plan) {
+      const card = $("plan-card");
+      if (!plan || !plan.meals || plan.meals.length === 0) {
+        card.innerHTML = `<div class="plan-empty">Your meal plan will appear here.</div>`;
+        return;
+      }
+
+      const days = normalizeToDays(plan);
+      const multiDay = days.length > 1;
+      if (state.activeDayIndex >= days.length) state.activeDayIndex = 0;
+      const day = days[state.activeDayIndex];
+
+      let html = "";
+
+      if (multiDay) {
+        html += `<div class="day-tabs">`;
+        days.forEach((_, i) => {
+          const active = i === state.activeDayIndex ? " active" : "";
+          html += `<button class="day-tab${active}" data-day="${i}" type="button">Day ${i + 1} of ${days.length}</button>`;
+        });
+        html += `</div>`;
+      }
+
+      for (const meal of day.meals) {
+        html += renderMeal(meal);
+      }
+
+      // Daily totals — sum across meals. Schema gives us per-meal P/C/F/kcal
+      // as computed fields, so we just aggregate on the client.
+      const totals = day.meals.reduce((acc, m) => {
+        acc.kcal += m.calories || 0;
+        acc.p += m.protein_g || 0;
+        acc.c += m.carbs_g || 0;
+        acc.f += m.fat_g || 0;
+        return acc;
+      }, { kcal: 0, p: 0, c: 0, f: 0 });
+
+      html += `
+        <div class="day-total">
+          <span class="label">Daily total</span>
+          <span class="macros">
+            <strong>${totals.kcal}</strong> kcal &nbsp;|&nbsp;
+            P ${totals.p}g &nbsp; C ${totals.c}g &nbsp; F ${totals.f}g
+          </span>
+        </div>
+      `;
+
+      if (state.calorieTarget) {
+        const delta = totals.kcal - state.calorieTarget;
+        const withinTen = Math.abs(delta) <= state.calorieTarget * 0.10;
+        const sign = delta > 0 ? "+" : (delta < 0 ? "−" : "±");
+        const deltaClass = withinTen ? "ok" : "off";
+        html += `
+          <div class="target-row">
+            <span>Target: ${state.calorieTarget} kcal</span>
+            <span class="delta ${deltaClass}">Δ ${sign}${Math.abs(delta)} kcal</span>
+          </div>
+        `;
+      }
+
+      if (day.notes) {
+        html += `<p class="plan-notes">${escapeHtml(day.notes)}</p>`;
+      } else if (plan.notes) {
+        html += `<p class="plan-notes">${escapeHtml(plan.notes)}</p>`;
+      }
+
+      card.innerHTML = html;
+
+      // Wire up day tabs (if any).
+      card.querySelectorAll(".day-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          state.activeDayIndex = Number(tab.dataset.day) || 0;
+          renderPlan(state.plan);
+        });
+      });
+    }
+
+    function renderMeal(meal) {
+      const foods = (meal.ingredients || []).map((food) => {
+        return `
+          <li class="food-row">
+            <span class="food-name">${escapeHtml(food.name)} · <span class="food-qty">${escapeHtml(food.quantity)}</span></span>
+            <span class="food-meta">${food.calories} kcal</span>
+          </li>
+        `;
+      }).join("");
+
+      const desc = meal.description ? `<p class="meal-desc">${escapeHtml(meal.description)}</p>` : "";
+
+      return `
+        <section class="meal-block">
+          <div class="meal-head">
+            <h3 class="meal-name">${escapeHtml(meal.name || "")}</h3>
+          </div>
+          ${desc}
+          <ul class="food-list">${foods}</ul>
+          <div class="meal-total">
+            <span>Meal total</span>
+            <span>
+              <strong>${meal.calories}</strong> kcal &nbsp;|&nbsp;
+              P ${meal.protein_g}g &nbsp; C ${meal.carbs_g}g &nbsp; F ${meal.fat_g}g
+            </span>
+          </div>
+        </section>
+      `;
+    }
+
+    // ---------- Textarea autosize (up to 4 lines) ----------
+    function autosizeTextarea(ta) {
+      ta.style.height = "auto";
+      // Cap at ~4 lines worth of content; CSS `max-height` then kicks in and
+      // the textarea starts scrolling internally.
+      ta.style.height = Math.min(ta.scrollHeight, 4 * 1.4 * 16 + 10) + "px";
+    }
+
+    // ---------- Onboarding submit ----------
     $("profile-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = $("submit-btn");
       const err = $("form-error");
       err.classList.add("hidden");
       btn.disabled = true;
-      btn.textContent = "Thinking...";
+      btn.textContent = "Thinking…";
 
+      const calorieTarget = Number($("calorie_target").value);
       const payload = {
         goal: $("goal").value,
-        calorie_target: Number($("calorie_target").value),
+        calorie_target: calorieTarget,
         protein_g_target: optionalInt("protein_g_target"),
         carbs_g_target: optionalInt("carbs_g_target"),
         fat_g_target: optionalInt("fat_g_target"),
@@ -268,11 +798,16 @@
         });
         if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
         const data = await res.json();
-        sessionId = data.session_id;
-        renderPlan(data.plan);
-        $("form-card").classList.add("hidden");
-        $("plan-card").classList.remove("hidden");
-        $("chat-card").classList.remove("hidden");
+
+        state.sessionId = data.session_id;
+        state.calorieTarget = calorieTarget;
+        state.plan = data.plan;
+        state.messages = [
+          { role: "assistant", text: "Here's your meal plan. Ask me to adjust anything." },
+        ];
+        persistSession(data.session_id, calorieTarget);
+        persistPlan(data.plan);
+        showSplitView();
       } catch (ex) {
         err.textContent = ex.message;
         err.classList.remove("hidden");
@@ -282,38 +817,114 @@
       }
     });
 
+    // ---------- Chat submit ----------
+    const chatInput = $("chat-input");
+    const sendBtn = $("chat-send");
+
+    function updateSendEnabled() {
+      const hasText = chatInput.value.trim().length > 0;
+      sendBtn.disabled = state.waiting || !hasText;
+    }
+
+    chatInput.addEventListener("input", () => {
+      autosizeTextarea(chatInput);
+      updateSendEnabled();
+    });
+
+    chatInput.addEventListener("keydown", (e) => {
+      // Enter sends; Shift+Enter inserts newline. Don't send while waiting.
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) $("chat-form").requestSubmit();
+      }
+    });
+
     $("chat-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const btn = $("chat-btn");
+      if (state.waiting) return;
       const err = $("chat-error");
-      const input = $("chat-input");
       err.classList.add("hidden");
-      const message = input.value.trim();
-      if (!message) return;
 
-      appendChatTurn("you", message);
-      input.value = "";
-      btn.disabled = true;
-      btn.textContent = "...";
+      const message = chatInput.value.trim();
+      if (!message) return;
+      if (!state.sessionId) {
+        err.textContent = "Session missing. Start a new plan.";
+        err.classList.remove("hidden");
+        return;
+      }
+
+      pushMessage("user", message);
+      chatInput.value = "";
+      autosizeTextarea(chatInput);
+      state.waiting = true;
+      updateSendEnabled();
+      renderChat();
 
       try {
         const res = await fetch("/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId, message }),
+          body: JSON.stringify({ session_id: state.sessionId, message }),
         });
         if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
         const data = await res.json();
-        renderPlan(data.plan);
-        appendChatTurn("nutri", data.plan.notes || "(updated the plan — see above)");
+
+        // The /chat endpoint returns a structured { plan }. Treat the plan
+        // itself as the machine-readable reply and use its `notes` as the
+        // visible assistant message. If notes is empty, fall back to a
+        // friendly confirmation. If the reply ever fails to parse as a
+        // valid plan shape, we leave the card unchanged (try/catch below).
+        let replyText = "";
+        try {
+          if (data && data.plan && Array.isArray(data.plan.meals)) {
+            state.plan = data.plan;
+            persistPlan(data.plan);
+            replyText = data.plan.notes || "Updated your plan.";
+          } else {
+            replyText = "(no plan returned — leaving the previous one in place)";
+          }
+        } catch {
+          replyText = "(couldn't parse the new plan — keeping the previous one)";
+        }
+
+        state.waiting = false;
+        pushMessage("assistant", replyText);
+        renderPlan(state.plan);
       } catch (ex) {
+        state.waiting = false;
         err.textContent = ex.message;
         err.classList.remove("hidden");
+        renderChat();
       } finally {
-        btn.disabled = false;
-        btn.textContent = "Send";
+        updateSendEnabled();
+        chatInput.focus();
       }
     });
+
+    // ---------- New plan ----------
+    $("new-plan-btn").addEventListener("click", () => {
+      clearSession();
+      // Full reload guarantees a clean slate (form state, closures, etc.).
+      window.location.reload();
+    });
+
+    // ---------- Boot ----------
+    (function init() {
+      if (state.sessionId) {
+        // Returning user (same tab). If we have a cached plan show it; the
+        // chat thread starts empty since /chat history lives server-side and
+        // we don't refetch it. A fresh assistant greeting keeps the thread
+        // from looking blank.
+        if (state.plan) {
+          state.messages = [
+            { role: "assistant", text: "Here's your meal plan. Ask me to adjust anything." },
+          ];
+        }
+        showSplitView();
+      } else {
+        showOnboarding();
+      }
+    })();
   </script>
 </body>
 </html>

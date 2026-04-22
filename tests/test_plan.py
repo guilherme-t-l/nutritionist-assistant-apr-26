@@ -76,7 +76,7 @@ def test_plan_returns_requested_number_of_meals(
                 "name": f"Meal {i + 1}",
                 "description": "stub",
                 "ingredients": [
-                    {"name": "rice", "calories": 400, "protein_g": 10, "carbs_g": 70, "fat_g": 5}
+                    {"name": "rice", "quantity": "1 xícara", "calories": 400, "protein_g": 10, "carbs_g": 70, "fat_g": 5}
                 ],
             }
             for i in range(5)

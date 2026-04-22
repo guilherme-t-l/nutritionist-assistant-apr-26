@@ -116,8 +116,8 @@ class TestMealPlan:
             name=name,
             description="A test meal.",
             ingredients=[
-                Food(name="rice", calories=calories, protein_g=20, carbs_g=60, fat_g=10),
-                Food(name="beans", calories=0, protein_g=0, carbs_g=0, fat_g=0),
+                Food(name="rice", quantity="1 xícara", calories=calories, protein_g=20, carbs_g=60, fat_g=10),
+                Food(name="beans", quantity="1 colher", calories=0, protein_g=0, carbs_g=0, fat_g=0),
             ],
         )
 
@@ -151,8 +151,8 @@ class TestMealPlan:
             name="Rice & chicken",
             description="post-gym",
             ingredients=[
-                Food(name="rice", calories=210, protein_g=4, carbs_g=45, fat_g=0),
-                Food(name="chicken breast", calories=165, protein_g=31, carbs_g=0, fat_g=4),
+                Food(name="rice", quantity="150 g", calories=210, protein_g=4, carbs_g=45, fat_g=0),
+                Food(name="chicken breast", quantity="100 g", calories=165, protein_g=31, carbs_g=0, fat_g=4),
             ],
         )
 
@@ -163,7 +163,19 @@ class TestMealPlan:
 
     def test_negative_food_calories_are_rejected(self) -> None:
         with pytest.raises(ValidationError):
-            Food(name="bad", calories=-10, protein_g=0, carbs_g=0, fat_g=0)
+            Food(name="bad", quantity="1 unit", calories=-10, protein_g=0, carbs_g=0, fat_g=0)
+
+    def test_food_quantity_is_required(self) -> None:
+        # A food row without a portion size is useless to the user — the
+        # schema should refuse it loudly, not silently accept it.
+        with pytest.raises(ValidationError):
+            Food(name="rice", calories=210, protein_g=4, carbs_g=45, fat_g=0)  # type: ignore[call-arg]
+
+    def test_food_quantity_rejects_empty_string(self) -> None:
+        # `min_length=1` guards against the LLM producing `"quantity": ""`
+        # as a cheap way to satisfy the type check. Empty is not a portion.
+        with pytest.raises(ValidationError):
+            Food(name="rice", quantity="", calories=210, protein_g=4, carbs_g=45, fat_g=0)
 
     def test_empty_meals_list_is_rejected(self) -> None:
         # A day with zero meals is not a valid plan.

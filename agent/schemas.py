@@ -86,6 +86,21 @@ class UserProfile(BaseModel):
 # calories on a plate actually come from.
 class Food(BaseModel):
     name: str
+    # Free-form portion string so the LLM can express Brazilian idioms
+    # naturally: "1 xícara", "2 colheres de sopa", "150 g", "1 unidade média".
+    # A structured (amount, unit) pair would force rigid picks and lose the
+    # colloquial shape users actually recognize on a plate.
+    # `min_length=1` rejects empty strings; `max_length=40` is a sanity cap
+    # so the LLM can't cram a sentence in here.
+    quantity: str = Field(
+        min_length=1,
+        max_length=40,
+        description=(
+            "Human-readable portion size for this ingredient, e.g. "
+            "'1 xícara', '2 colheres de sopa', '150 g', '1 unidade média'. "
+            "Use Brazilian household measures when natural; otherwise grams."
+        ),
+    )
     calories: int = Field(ge=0)
     protein_g: int = Field(ge=0)
     carbs_g: int = Field(ge=0)

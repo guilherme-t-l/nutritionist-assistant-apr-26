@@ -26,26 +26,26 @@ CANNED_PLAN_JSON = """
       "name": "Tapioca com queijo",
       "description": "Simple Brazilian breakfast.",
       "ingredients": [
-        {"name": "tapioca flour", "calories": 250, "protein_g": 0, "carbs_g": 55, "fat_g": 0},
-        {"name": "cheese",        "calories": 150, "protein_g": 15, "carbs_g": 0,  "fat_g": 12}
+        {"name": "tapioca flour", "quantity": "4 colheres de sopa", "calories": 250, "protein_g": 0, "carbs_g": 55, "fat_g": 0},
+        {"name": "cheese",        "quantity": "40 g",               "calories": 150, "protein_g": 15, "carbs_g": 0,  "fat_g": 12}
       ]
     },
     {
       "name": "Feijoada lite",
       "description": "Lightened feijoada.",
       "ingredients": [
-        {"name": "black beans", "calories": 200, "protein_g": 15, "carbs_g": 35, "fat_g": 1},
-        {"name": "pork",        "calories": 300, "protein_g": 25, "carbs_g": 0,  "fat_g": 19},
-        {"name": "rice",        "calories": 200, "protein_g": 0,  "carbs_g": 45, "fat_g": 0}
+        {"name": "black beans", "quantity": "1 concha",    "calories": 200, "protein_g": 15, "carbs_g": 35, "fat_g": 1},
+        {"name": "pork",        "quantity": "100 g",       "calories": 300, "protein_g": 25, "carbs_g": 0,  "fat_g": 19},
+        {"name": "rice",        "quantity": "1/2 xícara",  "calories": 200, "protein_g": 0,  "carbs_g": 45, "fat_g": 0}
       ]
     },
     {
       "name": "Grilled fish with farofa",
       "description": "Grilled tilapia with manioc farofa.",
       "ingredients": [
-        {"name": "tilapia",       "calories": 250, "protein_g": 40, "carbs_g": 0,  "fat_g": 10},
-        {"name": "cassava flour", "calories": 300, "protein_g": 2,  "carbs_g": 50, "fat_g": 5},
-        {"name": "onion",         "calories": 50,  "protein_g": 3,  "carbs_g": 0,  "fat_g": 3}
+        {"name": "tilapia",       "quantity": "150 g",           "calories": 250, "protein_g": 40, "carbs_g": 0,  "fat_g": 10},
+        {"name": "cassava flour", "quantity": "3 colheres",      "calories": 300, "protein_g": 2,  "carbs_g": 50, "fat_g": 5},
+        {"name": "onion",         "quantity": "1/2 unidade",     "calories": 50,  "protein_g": 3,  "carbs_g": 0,  "fat_g": 3}
       ]
     }
   ],

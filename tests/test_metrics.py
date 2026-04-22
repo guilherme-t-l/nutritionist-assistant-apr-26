@@ -19,7 +19,7 @@ from evals.metrics import allergen_leak, cuisine_relevance, json_valid, target_a
 # ---------- helpers ------------------------------------------------------------
 
 def _make_food(name: str, kcal: int, p: int = 0, c: int = 0, f: int = 0) -> Food:
-    return Food(name=name, calories=kcal, protein_g=p, carbs_g=c, fat_g=f)
+    return Food(name=name, quantity="1 portion", calories=kcal, protein_g=p, carbs_g=c, fat_g=f)
 
 
 def _plan_2000_kcal() -> MealPlan:
